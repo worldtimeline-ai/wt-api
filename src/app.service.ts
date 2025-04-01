@@ -5,6 +5,15 @@ import { AzureAIService } from './azureai.service';
 export class AppService {
   constructor(private azureAIService: AzureAIService) {}
 
+  async getChatResponse(data: any): Promise<any> {
+    try {
+      return await this.azureAIService.chatMessage(data);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   async createQuery(threadId: string, data: any): Promise<any> {
     try {
       let createNewThread = !threadId;

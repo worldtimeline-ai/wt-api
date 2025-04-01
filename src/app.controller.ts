@@ -3,7 +3,12 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
+
+  @Post('/chat')
+  getChatResponse(@Body() data: any): any {
+    return this.appService.getChatResponse(data);
+  }
 
   @Post('/query')
   createQuery(@Query('thread_id') threadId: string, @Body() data: any): any {
@@ -11,10 +16,7 @@ export class AppController {
   }
 
   @Get('/status')
-  getQueryStatus(
-    @Query('thread_id') threadId: string,
-    @Query('run_id') runId: string,
-  ): any {
+  getQueryStatus(@Query('thread_id') threadId: string, @Query('run_id') runId: string): any {
     return this.appService.getRunStatus(threadId, runId);
   }
 

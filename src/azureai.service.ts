@@ -19,6 +19,49 @@ export class AzureAIService {
     this.apiVersion = '2024-05-01-preview';
   }
 
+  async chatMessage(data: any): Promise<any> {
+    const messages = [
+      {
+        role: 'system',
+        content: `You are a world history assistant that only responds in valid JSON format. \
+        Do not include any explanations, extra text, new line characters, or Markdown formatting. \
+        If you cannot provide a valid JSON response, return an empty JSON object {}. \
+        You are assisting me on giving events that happened during an inputted year range and map area selected. \
+        I will send the center of map in the form of lattitude, longitude and the zoom value. I am expecting the events that happened in all the regions visible on the map. \
+        Each result should have a list of events that happened during the inputted region and period. \
+        Also include a geolocation (in the form of lattitude, longitude) where any event happened. \
+        Also, each event will have a list of tags it belongs to like political, economical, social, science, etc.The tags should not be the heading for events. \
+        Rather the response should have a list of events.and each event have list of tags highlighted.`,
+      },
+      {
+        role: 'user',
+        content: 'What happened around 28.5355 N, 77.3910 E with map zoom position at 7 during 1560-1890?',
+      },
+    ];
+    try {
+      const chatResponse = await axios.post<{ choices: [{ message: any }] }>(
+        `${this.endpoint}/openai/deployments/${this.deployment}/chat/completions?api-version=${this.apiVersion}`,
+        {
+          messages: messages,
+          temperature: 0.2,
+          top_p: 0.95,
+          max_tokens: 4096,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': this.apiKey,
+          },
+        },
+      );
+      console.log('New Thread Response:', chatResponse.data);
+      return JSON.parse(chatResponse.data?.choices?.[0]?.message?.content);
+    } catch (error) {
+      console.error('Error calling Azure OpenAI:', error.response?.data || error.message);
+      throw error;
+    }
+  }
+
   async createNewThread(): Promise<{ id: string }> {
     try {
       const newThreadResponse = await axios.post<{ id: string }>(
@@ -34,10 +77,7 @@ export class AzureAIService {
       console.log('New Thread Response:', newThreadResponse.data);
       return newThreadResponse.data;
     } catch (error) {
-      console.error(
-        'Error calling Azure OpenAI:',
-        error.response?.data || error.message,
-      );
+      console.error('Error calling Azure OpenAI:', error.response?.data || error.message);
       throw error;
     }
   }
@@ -60,10 +100,7 @@ export class AzureAIService {
       console.log('User Query Response:', newQueryResponse.data);
       return newQueryResponse.data;
     } catch (error) {
-      console.error(
-        'Error calling Azure OpenAI:',
-        error.response?.data || error.message,
-      );
+      console.error('Error calling Azure OpenAI:', error.response?.data || error.message);
       throw error;
     }
   }
@@ -85,10 +122,7 @@ export class AzureAIService {
       console.log('Run Thread Response:', runThreadResponse.data);
       return runThreadResponse.data;
     } catch (error) {
-      console.error(
-        'Error calling Azure OpenAI:',
-        error.response?.data || error.message,
-      );
+      console.error('Error calling Azure OpenAI:', error.response?.data || error.message);
       throw error;
     }
   }
@@ -107,10 +141,7 @@ export class AzureAIService {
       console.log('Status Response:', statusResponse.data);
       return statusResponse.data;
     } catch (error) {
-      console.error(
-        'Error calling Azure OpenAI:',
-        error.response?.data || error.message,
-      );
+      console.error('Error calling Azure OpenAI:', error.response?.data || error.message);
       throw error;
     }
   }
@@ -129,10 +160,7 @@ export class AzureAIService {
       console.log('Message Response:', messageResponse.data);
       return messageResponse.data;
     } catch (error) {
-      console.error(
-        'Error calling Azure OpenAI:',
-        error.response?.data || error.message,
-      );
+      console.error('Error calling Azure OpenAI:', error.response?.data || error.message);
       throw error;
     }
   }
