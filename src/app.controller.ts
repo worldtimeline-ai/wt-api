@@ -5,22 +5,22 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
-  @Post('/chat')
+  @Post('/chat/events')
   getChatResponse(@Body() data: any): any {
     return this.appService.getChatResponse(data);
   }
 
-  @Post('/query')
+  @Post('/assistant/query')
   createQuery(@Query('thread_id') threadId: string, @Body() data: any): any {
     return this.appService.createQuery(threadId, data);
   }
 
-  @Get('/status')
+  @Get('/assistant/status')
   getQueryStatus(@Query('thread_id') threadId: string, @Query('run_id') runId: string): any {
     return this.appService.getRunStatus(threadId, runId);
   }
 
-  @Get('/events')
+  @Get('/assistant/events')
   getEvents(@Query('thread_id') threadId: string): any {
     return this.appService.getEvents(threadId);
   }

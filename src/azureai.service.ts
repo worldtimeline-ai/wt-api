@@ -27,15 +27,16 @@ export class AzureAIService {
         Do not include any explanations, extra text, new line characters, or Markdown formatting. \
         If you cannot provide a valid JSON response, return an empty JSON object {}. \
         You are assisting me on giving events that happened during an inputted year range and map area selected. \
-        I will send the center of map in the form of lattitude, longitude and the zoom value. I am expecting the events that happened in all the regions visible on the map. \
-        Each result should have a list of events that happened during the inputted region and period. \
-        Also include a geolocation (in the form of lattitude, longitude) where any event happened. \
-        Also, each event will have a list of tags it belongs to like political, economical, social, science, etc.The tags should not be the heading for events. \
+        I will send the center of map in the form of latitude, longitude and the zoom value. I am expecting the events that happened in all the regions visible on the map. \
+        Each result should have a list of events that happened during the inputted region and period. Event desciption should come in field: 'description'. \
+        Also include a geolocation (in the form of latitude, longitude) (Field key: 'location') where any event happened. \
+        Also include the year or year range (Field key: 'year') on which event happened. \
+        Also, each event will have a list of tags (field key: 'tags') it belongs to like political, economical, social, science, etc.The tags should not be the heading for events. \
         Rather the response should have a list of events.and each event have list of tags highlighted.`,
       },
       {
         role: 'user',
-        content: 'What happened around 28.5355 N, 77.3910 E with map zoom position at 7 during 1560-1890?',
+        content: `What happened around ${data.view.center.lat} N, ${data.view.center.lng} E with map zoom position at ${data.view.zoom} during ${data.year.start}-${data.year.end}?`,
       },
     ];
     try {
