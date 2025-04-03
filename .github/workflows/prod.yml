@@ -1,0 +1,56 @@
+on:
+  push:
+    branches:
+      - main
+name: Prod - Build & Deploy
+env:
+  LOCATION: centralindia
+  RESOURCE_GROUP: WorldTimelineTARG
+  STORAGE_ACCOUNT: worldtimelineasa
+  STORAGE_CONTAINER: worldtimelineasc
+  CONTAINER_REGISTERY: worldtimelineacr
+  KEY_VAULT: WorldTimelineAKV
+  APP_NAME: world-timeline-api
+  WEBAPP_NAME: worldtimelineapi
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: Checkout GitHub Action
+          uses: actions/checkout@master
+          
+        - name: Login to Azure
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.PROD_AZURE_CREDENTIALS }}
+
+        - name: Set default location
+          run: |
+            az configure --defaults location=${{ env.LOCATION }}
+            az configure --defaults group=${{ env.RESOURCE_GROUP }}
+        
+        - name: Create .env
+          run: |
+            touch .env
+            printf '${{ secrets.PROD_API_ENV }}' > .env
+
+        - name: Build & Push
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ env.CONTAINER_REGISTERY }}.azurecr.io
+            username: ${{ secrets.PROD_AZURE_USERNAME }}
+            password: ${{ secrets.PROD_AZURE_PASSWORD }}
+        - run: |
+            docker build . -t ${{ env.APP_NAME }}:1.0.${{ github.run_number }}
+            docker tag ${{ env.APP_NAME }}:1.0.${{ github.run_number }} ${{ env.CONTAINER_REGISTERY }}.azurecr.io/builds/${{ env.APP_NAME }}:1.0.${{ github.run_number }}
+            docker push ${{ env.CONTAINER_REGISTERY }}.azurecr.io/builds/${{ env.APP_NAME }}:1.0.${{ github.run_number }}
+        
+        - uses: azure/webapps-deploy@v2
+          with:
+            app-name: ${{ env.WEBAPP_NAME }}
+            images: ${{ env.CONTAINER_REGISTERY }}.azurecr.io/builds/${{ env.APP_NAME }}:1.0.${{ github.run_number }}
+
+        - name: logout
+          run: |
+            az logout
