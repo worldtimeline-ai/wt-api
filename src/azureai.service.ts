@@ -26,7 +26,7 @@ export class AzureAIService {
         content: `You are a world history assistant that only responds in valid JSON format. \
         Do not include any explanations, extra text, new line characters, or Markdown formatting. \
         If you cannot provide a valid JSON response, return an empty JSON object {}. \
-        You are assisting me on giving events that happened during an inputted year range and map area selected. \
+        You are assisting me on giving all major and sub-major events that happened during an inputted year range and map area selected. Please give as many events per request as possible. \
         I will send the center of map in the form of latitude, longitude and the zoom value. I am expecting the events that happened in all the regions visible on the map. \
         Each result should have a list of events that happened during the inputted region and period. Event desciption should come in field: 'description'. \
         Also include a geolocation (in the form of latitude, longitude) (Field key: 'location') where any event happened. \
@@ -36,7 +36,7 @@ export class AzureAIService {
       },
       {
         role: 'user',
-        content: `What happened around ${data.view.center.lat} N, ${data.view.center.lng} E with map zoom position at ${data.view.zoom} during ${data.year.start}-${data.year.end}?`,
+        content: `What happened around ${data.view.center.lat} N, ${data.view.center.lng} E with map zoom position at ${data.view.zoom + 1} during ${data.year.start}-${data.year.end}?`,
       },
     ];
     try {
@@ -55,7 +55,7 @@ export class AzureAIService {
           },
         },
       );
-      console.log('New Thread Response:', chatResponse.data);
+      console.log('Chat Response:', chatResponse.data);
       return JSON.parse(chatResponse.data?.choices?.[0]?.message?.content);
     } catch (error) {
       console.error('Error calling Azure OpenAI:', error.response?.data || error.message);
