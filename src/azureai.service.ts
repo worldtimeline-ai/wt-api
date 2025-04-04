@@ -31,12 +31,24 @@ export class AzureAIService {
         Each result should have a list of events that happened during the inputted region and period. Event desciption should come in field: 'description'. \
         Also include a geolocation (in the form of latitude, longitude) (Field key: 'location') where any event happened. \
         Also include the year or year range (Field key: 'year') on which event happened. \
-        Also, each event will have a list of tags (field key: 'tags') it belongs to like political, economical, social, science, etc.The tags should not be the heading for events. \
+        Also, each event will have a list of tags (field key: 'tags') it belongs to like: \
+        - political \
+        - economical \
+        - social \
+        - cultural \
+        - art \
+        - environment \
+        - science \
+        - food \
+        - literature \
+        - military \
+        - military \
+        etc.The tags should not be the heading for events. \
         Rather the response should have a list of events.and each event have list of tags highlighted.`,
       },
       {
         role: 'user',
-        content: `What happened around ${data.view.center.lat} N, ${data.view.center.lng} E with map zoom position at ${data.view.zoom + 1} during ${data.year.start}-${data.year.end}?`,
+        content: `What happened around ${data.view.center.lat} N, ${data.view.center.lng} E with map zoom position at ${data.view.zoom} during ${data.year.start}-${data.year.end}?`,
       },
     ];
     try {
@@ -44,7 +56,7 @@ export class AzureAIService {
         `${this.endpoint}/openai/deployments/${this.deployment}/chat/completions?api-version=${this.apiVersion}`,
         {
           messages: messages,
-          temperature: 0.2,
+          temperature: 0.95,
           top_p: 0.95,
           max_tokens: 4096,
         },
