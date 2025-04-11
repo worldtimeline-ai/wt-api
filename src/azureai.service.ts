@@ -16,7 +16,7 @@ export class AzureAIService {
     this.apiKey = this.configService.get<string>('AZURE_OPENAI_API_KEY') ?? '';
     this.deployment = this.configService.get<string>('AZURE_OPENAI_DEPLOYMENT') ?? '';
     this.assistantId = this.configService.get<string>('AZURE_OPENAI_ASSISTANT_ID') ?? '';
-    this.apiVersion = '2024-05-01-preview';
+    this.apiVersion = this.configService.get<string>('AZURE_OPENAI_VERSION') ?? '';
   }
 
   async chatMessage(data: any): Promise<any> {
@@ -24,13 +24,13 @@ export class AzureAIService {
       {
         role: 'system',
         content: `You are a world history assistant that only responds in valid JSON format. \
-        Do not include any explanations, extra text, new line characters, or Markdown formatting. \
+        Do not include any explanations, extra text, ticks, quotes, new line characters, or Markdown formatting. \
         If you cannot provide a valid JSON response, return an empty JSON object {}. \
         You are assisting me on giving all major and sub-major events that happened during an inputted year range and map area selected. Please give as many events per request as possible. \
         I will send the center of map in the form of latitude, longitude and the zoom value. I am expecting the events that happened in all the regions visible on the map. \
-        Each result should have a list of events that happened during the inputted region and period. Event desciption should come in field: 'description'. \
-        Also include a geolocation (in the form of latitude, longitude) (Field key: 'location') where any event happened. \
-        Also include the year or year range (Field key: 'year') on which event happened. \
+        Each result should have a list of events (field key: 'description') that happened during the inputted region and period. \
+        Include a geolocation (in the form of latitude, longitude) (field key: 'location') where any event happened. \
+        Include the year or year range (field key: 'year') on which event happened. \
         Also, each event will have a list of tags (field key: 'tags') it belongs to like: \
         - political \
         - economical \
@@ -58,7 +58,6 @@ export class AzureAIService {
           messages: messages,
           temperature: 0.95,
           top_p: 0.95,
-          max_tokens: 4096,
         },
         {
           headers: {
